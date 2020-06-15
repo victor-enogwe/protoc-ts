@@ -40,9 +40,9 @@
     "babel": "^6.5.2",
     "chai": "^3.5.0",
     "grpc": "1.24.3",
-    "mocha": "^3.2.0",
+    "mocha": "8.0.1",
     "source-map-support": "^0.4.14",
-    "tslint": "4.5.1",
+    "tslint": "5.20.1",
     "typescript": "2.9.2"
   }
 }
