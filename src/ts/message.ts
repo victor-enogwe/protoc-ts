@@ -43,7 +43,7 @@ export function printMessage(fileName: string, exportMap: ExportMap, messageDesc
 
   const printer = new Printer(indentLevel);
 
-  printer.write(printDocumentation('interface', messageName, 0, `${messageName} interface that provides properties
+  printer.write(printDocumentation("interface", String(messageName), 0, `${messageName} interface that provides properties
  * and typings from the given gRPC ${messageName} Message.`));
 
   printer.printLn(`export interface ${messageName} {`);
@@ -53,21 +53,20 @@ export function printMessage(fileName: string, exportMap: ExportMap, messageDesc
   messageDescriptor.getFieldList().forEach(field => {
     if (field.hasOneofIndex()) {
       const oneOfIndex = field.getOneofIndex();
-      let existing = oneOfGroups[oneOfIndex];
+      let existing = oneOfGroups[(Number(oneOfIndex))];
       if (existing === undefined) {
         existing = [];
-        oneOfGroups[oneOfIndex] = existing;
+        oneOfGroups[(Number(oneOfIndex))] = existing;
       }
       existing.push(field);
     }
-    const snakeCaseName = field.getName().toLowerCase();
+    const snakeCaseName = String(field.getName()).toLowerCase();
     const camelCaseName = snakeToCamel(snakeCaseName);
     const withUppercase = uppercaseFirst(camelCaseName);
     const type = field.getType();
 
-    let exportType = getTypeName(type);
-    const fullTypeName = field.getTypeName().slice(1);
-    
+    let exportType = getTypeName(type!);
+    const fullTypeName = field.getTypeName()!.slice(1);
     if (type === MESSAGE_TYPE) {
       const fieldMessageType = exportMap.getMessage(fullTypeName);
       if (fieldMessageType === undefined) {
@@ -86,7 +85,10 @@ export function printMessage(fileName: string, exportMap: ExportMap, messageDesc
         }
         printer.printIndentedLn(`get${withUppercase}Map(): jspb.Map<${keyTypeName}, ${valueTypeName}>;`);
         printer.printIndentedLn(`clear${withUppercase}Map(): void;`);
-        toObjectType.printIndentedLn(`${camelCaseName}Map: Array<[${keyTypeName}${keyType === MESSAGE_TYPE ? ".AsObject" : ""}, ${valueTypeName}${valueType === MESSAGE_TYPE ? ".AsObject" : ""}]>,`);
+        toObjectType.printIndentedLn(
+          `${camelCaseName}Map: Array<[${keyTypeName}${keyType === MESSAGE_TYPE ? ".AsObject" : ""},
+          ${valueTypeName}${valueType === MESSAGE_TYPE ? ".AsObject" : ""}]>,`
+        );
         return;
       }
       const withinNamespace = withinNamespaceFromExportEntry(fullTypeName, fieldMessageType);
@@ -120,7 +122,10 @@ export function printMessage(fileName: string, exportMap: ExportMap, messageDesc
         canBeUndefined = true;
       }
     }
-    printer.printIndentedLn(`${camelCaseName}${canBeUndefined ? "?" : ""}: ${exportType}${field.getLabel() === FieldDescriptorProto.Label.LABEL_REPEATED ? '[]' : ''};`);
+    printer.printIndentedLn(
+      `${camelCaseName}${canBeUndefined ? "?" : ""}: ${exportType}${field.getLabel() === FieldDescriptorProto.Label.LABEL_REPEATED
+        ? "[]" : ""};`
+      );
   });
 
   toObjectType.printLn(`}`);
@@ -144,7 +149,7 @@ export function printMessage(fileName: string, exportMap: ExportMap, messageDesc
 
   printer.print(toObjectType.getOutput());
 */
-  //printer.printEmptyLn();
+  // printer.printEmptyLn();
   messageDescriptor.getNestedTypeList().forEach(nested => {
     const msgOutput = printMessage(fileName, exportMap, nested, indentLevel, fileDescriptor);
     if (msgOutput !== "") {
@@ -162,7 +167,7 @@ export function printMessage(fileName: string, exportMap: ExportMap, messageDesc
     printer.write(printExtension(fileName, exportMap, extension, indentLevel));
   });
 
-  //printer.printLn(`}`);
+  // printer.printLn(`}`);
 
   return printer.getOutput();
 }

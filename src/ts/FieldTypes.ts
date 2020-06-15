@@ -34,13 +34,13 @@ export function getFieldType(type: FieldDescriptorProto.Type, typeName: string, 
   if (type === MESSAGE_TYPE) {
     const fromExport = exportMap.getMessage(typeName);
     if (!fromExport) {
-      throw new Error("Could not getFieldType for message: " + typeName + '' + currentFileName);
+      throw new Error("Could not getFieldType for message: " + typeName + "" + currentFileName);
     }
     return withinNamespaceFromExportEntry(typeName, fromExport);
   } else if (type === ENUM_TYPE) {
     const fromExport = exportMap.getEnum(typeName);
     if (!fromExport) {
-      throw new Error("Could not getFieldType for enum: " + typeName  + '' + currentFileName);
+      throw new Error("Could not getFieldType for enum: " + typeName  + "" + currentFileName);
     }
     return withinNamespaceFromExportEntry(typeName, fromExport);
   } else {

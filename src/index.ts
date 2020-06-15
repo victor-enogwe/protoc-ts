@@ -31,7 +31,7 @@ withAllStdIn((inputBuff: Buffer) => {
     // const generateServices = codeGenRequest.getParameter() === "service=true";
 
     codeGenRequest.getProtoFileList().forEach(protoFileDescriptor => {
-      fileNameToDescriptor[protoFileDescriptor.getName()] = protoFileDescriptor;
+      fileNameToDescriptor[String(protoFileDescriptor.getName())] = protoFileDescriptor;
       exportMap.addFileDescriptor(protoFileDescriptor);
     });
 
@@ -43,7 +43,7 @@ withAllStdIn((inputBuff: Buffer) => {
          * Apache 2.0
          */
         const fileDescriptorOutput = printFileDescriptorTSServices(fileNameToDescriptor[fileName], exportMap);
-        if (fileDescriptorOutput != "") {
+        if (fileDescriptorOutput !== "") {
           const thisServiceFile = new CodeGeneratorResponse.File();
           thisServiceFile.setName(fileName + ".ts");
           thisServiceFile.setContent(fileDescriptorOutput);
@@ -51,7 +51,7 @@ withAllStdIn((inputBuff: Buffer) => {
         }
     });
 
-    process.stdout.write(new Buffer(codeGenResponse.serializeBinary()));
+    process.stdout.write(Buffer.from(codeGenResponse.serializeBinary()));
   } catch (err) {
     console.error("protoc-gen-ts error: " + err.stack + "\n");
     process.exit(1);
